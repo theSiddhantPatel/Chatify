@@ -14,8 +14,4 @@ router.get("/logout", (req, res) => {
   res.send("Logout endpoint");
 });
 
-router.get("/update", (req, res) => {
-  res.send("Update endpoint");
-});
-
 export default router;

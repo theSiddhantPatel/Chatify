@@ -1,4 +1,4 @@
-<div align="center">
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/283ab749-1be1-46d1-93bb-c8ec404aefbc" /><div align="center">
 
 # 💬 𝗠𝗘𝗥𝗡 𝗥𝗲𝗮𝗹-𝗧𝗶𝗺𝗲 𝗖𝗵𝗮𝘁 𝗔𝗽𝗽 
 
@@ -6,7 +6,7 @@ A modern full-stack **real-time chat application** built with the **𝗠𝗘𝗥
 It features secure **JWT authentication**, **Cloudinary image uploads**, **online presence indicators**,  
 and a **beautiful responsive UI** built with React, Tailwind, and DaisyUI.
 
-![Preview](./preview.png)
+
 
 </div>
 

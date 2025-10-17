@@ -1,4 +1,5 @@
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/283ab749-1be1-46d1-93bb-c8ec404aefbc" /><div align="center">
+<img width="1344" height="768" alt="image" src="https://github.com/user-attachments/assets/3b30d73e-ebe2-48dc-99fb-486ff5029f85" />
+
 
 # 💬 𝗠𝗘𝗥𝗡 𝗥𝗲𝗮𝗹-𝗧𝗶𝗺𝗲 𝗖𝗵𝗮𝘁 𝗔𝗽𝗽 
 

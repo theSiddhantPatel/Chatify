@@ -87,6 +87,4 @@ Layer	Technology
 🌐 Dark / Light Mode Toggle
 📱 Mobile-friendly PWA support
 
-<div align="center">
-🖤 𝗕𝘂𝗶𝗹𝘁 𝘄𝗶𝘁𝗵 𝗟𝗼𝘃𝗲 𝗮𝗻𝗱 𝗠𝗘𝗥𝗡 𝗦𝘁𝗮𝗰𝗸
-</div>
+                                                                🖤 𝗕𝘂𝗶𝗹𝘁 𝘄𝗶𝘁𝗵 𝗟𝗼𝘃𝗲 𝗮𝗻𝗱 𝗠𝗘𝗥𝗡 𝗦𝘁𝗮𝗰𝗸

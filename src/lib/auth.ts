@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import User, { IUserDocument } from "@/models/User";
 import { connectDB } from "./db";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret_chatify";
+const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret_pingora";
 
 interface TokenPayload {
   userId: string;

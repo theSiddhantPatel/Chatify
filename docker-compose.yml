@@ -1,7 +1,7 @@
 services:
-  chatify:
+  pingora:
     build: .
-    container_name: chatify-container
+    container_name: pingora-container
     restart: unless-stopped
     ports:
       - "3000:3000"

@@ -4,8 +4,8 @@ import AuthInitializer from "@/components/AuthInitializer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chatify - Real-Time Chat App",
-  description: "Connect anytime, anywhere with Chatify",
+  title: "Pingora - Real-Time Chat App",
+  description: "Connect anytime, anywhere with Pingora",
 };
 
 export default function RootLayout({

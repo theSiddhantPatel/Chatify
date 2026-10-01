@@ -128,7 +128,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (!pusherClient) return;
 
     // Presence channel for online users
-    const presenceChannel = pusherClient.subscribe("presence-chatify");
+    const presenceChannel = pusherClient.subscribe("presence-pingora");
 
     presenceChannel.bind("pusher:subscription_succeeded", (members: any) => {
       set({ onlineUsers: Object.keys(members.members || {}) });
@@ -157,7 +157,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     if (presenceChannel) {
       presenceChannel.unbind_all();
-      pusher?.unsubscribe("presence-chatify");
+      pusher?.unsubscribe("presence-pingora");
     }
 
     if (userChannel && authUser) {

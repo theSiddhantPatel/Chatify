@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
+import Link from "next/link";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
@@ -42,13 +43,13 @@ function ProfileHeader() {
   if (!authUser) return null;
 
   return (
-    <div className="p-6 border-b border-slate-700/50">
+    <div className="p-4 sm:p-5 border-b border-slate-700/50">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* AVATAR */}
           <div className="avatar online">
             <button
-              className="size-14 rounded-full overflow-hidden relative group"
+              className="size-12 sm:size-14 rounded-full overflow-hidden relative group"
               onClick={() => fileInputRef.current?.click()}
             >
               <img
@@ -71,12 +72,28 @@ function ProfileHeader() {
           </div>
 
           {/* USERNAME & ONLINE TEXT */}
-          <div>
-            <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
+          <div className="min-w-0">
+            <h3 className="text-slate-200 font-medium text-sm max-w-[150px] truncate">
               {authUser.fullName}
             </h3>
-
-            <p className="text-slate-400 text-xs">Online</p>
+            {authUser.username ? (
+              <Link
+                href="/choose-username"
+                className="text-cyan-400 hover:text-cyan-300 text-xs truncate flex items-center gap-1 group/u"
+                title="Change username"
+              >
+                <span>@{authUser.username}</span>
+                <span className="text-[10px] text-slate-500 group-hover/u:text-cyan-300 transition-colors">✎</span>
+              </Link>
+            ) : (
+              <Link
+                href="/choose-username"
+                className="text-amber-400 hover:text-amber-300 text-xs truncate underline"
+              >
+                Set username
+              </Link>
+            )}
+            <p className="text-slate-400 text-[11px]">Online</p>
           </div>
         </div>
 

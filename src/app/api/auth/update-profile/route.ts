@@ -13,23 +13,75 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const { profilePic } = await req.json();
-    if (!profilePic) {
+    const body = await req.json();
+    const { profilePic, username } = body;
+
+    if (!profilePic && !username) {
       return NextResponse.json(
-        { message: "Profile picture is required" },
+        { message: "No update fields provided" },
         { status: 400 }
       );
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const updateData: Record<string, any> = {};
+
+    if (profilePic) {
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+      updateData.profilePic = uploadResponse.secure_url;
+    }
+
+    if (username) {
+      const cleanUsername = username.toLowerCase().trim().replace(/^@/, "");
+      const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+      if (!usernameRegex.test(cleanUsername)) {
+        return NextResponse.json(
+          {
+            message:
+              "Username must be 3-20 characters long and contain only letters, numbers, and underscores",
+          },
+          { status: 400 }
+        );
+      }
+
+      const existing = await User.findOne({
+        username: cleanUsername,
+        _id: { $ne: user._id },
+      });
+      if (existing) {
+        return NextResponse.json(
+          { message: "Username is already taken" },
+          { status: 400 }
+        );
+      }
+
+      updateData.username = cleanUsername;
+      updateData.hasChosenUsername = true;
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { profilePic: uploadResponse.secure_url },
+      updateData,
       { new: true }
     ).select("-password");
 
-    return NextResponse.json(updatedUser);
+    if (!updatedUser) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      _id: updatedUser._id,
+      fullName: updatedUser.fullName,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      profilePic: updatedUser.profilePic,
+      hasChosenUsername: Boolean(
+        updatedUser.hasChosenUsername ||
+          (updatedUser.password && updatedUser.username)
+      ),
+    });
   } catch (error: any) {
     console.error("Update profile error:", error);
     return NextResponse.json(

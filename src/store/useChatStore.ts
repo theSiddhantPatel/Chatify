@@ -18,6 +18,8 @@ interface ChatStore {
   setActiveTab: (tab: "chats" | "contacts") => void;
   setSelectedUser: (selectedUser: IUser | null) => void;
   getAllContacts: () => Promise<void>;
+  addContact: (username: string) => Promise<boolean>;
+  removeContact: (userId: string) => Promise<void>;
   getMyChatPartners: () => Promise<void>;
   getMessagesByUserId: (userId: string) => Promise<void>;
   sendMessage: (messageData: { text?: string; image?: string }) => Promise<void>;
@@ -58,6 +60,40 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       toast.error(error.response?.data?.message || "Failed to load contacts");
     } finally {
       set({ isUsersLoading: false });
+    }
+  },
+
+  addContact: async (username: string) => {
+    try {
+      const res = await axiosInstance.post<IUser>("/messages/contacts", {
+        username,
+      });
+      const newContact = res.data;
+      set({
+        allContacts: [
+          ...get().allContacts.filter((c) => c._id !== newContact._id),
+          newContact,
+        ],
+      });
+      toast.success(
+        `@${newContact.username || newContact.fullName} added to contacts!`
+      );
+      return true;
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to add contact");
+      return false;
+    }
+  },
+
+  removeContact: async (userId: string) => {
+    try {
+      await axiosInstance.delete(`/messages/contacts?userId=${userId}`);
+      set({
+        allContacts: get().allContacts.filter((c) => c._id !== userId),
+      });
+      toast.success("Contact removed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to remove contact");
     }
   },
 

@@ -17,10 +17,16 @@ interface AuthStore {
   onlineUsers: string[];
 
   checkAuth: () => Promise<void>;
-  signup: (data: { fullName: string; email: string; password: string }) => Promise<void>;
-  login: (data: { email: string; password: string }) => Promise<void>;
+  signup: (data: {
+    fullName: string;
+    username: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
+  login: (data: { emailOrUsername: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (data: { profilePic: string }) => Promise<void>;
+  setUsername: (username: string) => Promise<boolean>;
+  updateProfile: (data: { profilePic?: string; username?: string }) => Promise<void>;
   connectPusher: () => void;
   disconnectPusher: () => void;
 }
@@ -85,6 +91,21 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch (error) {
       toast.error("Error logging out");
       console.log("Logout error:", error);
+    }
+  },
+
+  setUsername: async (username: string) => {
+    try {
+      const res = await axiosInstance.post<IUser>("/auth/set-username", {
+        username,
+      });
+      set({ authUser: res.data });
+      toast.success("Username saved successfully!");
+      return true;
+    } catch (error: any) {
+      console.log("Error setting username:", error);
+      toast.error(error.response?.data?.message || "Failed to set username");
+      return false;
     }
   },
 

@@ -11,11 +11,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const hasChosen = Boolean(
+      user.hasChosenUsername || (user.password && user.username)
+    );
+
     return NextResponse.json({
       _id: user._id,
       fullName: user.fullName,
+      username: user.username,
       email: user.email,
       profilePic: user.profilePic,
+      hasChosenUsername: hasChosen,
     });
   } catch (error: any) {
     console.error("Auth check error:", error);

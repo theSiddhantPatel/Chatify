@@ -7,11 +7,23 @@ import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
-    const { fullName, email, password } = await req.json();
+    const { fullName, username, email, password } = await req.json();
 
-    if (!fullName || !email || !password) {
+    if (!fullName || !username || !email || !password) {
       return NextResponse.json(
         { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    const cleanUsername = username.toLowerCase().trim().replace(/^@/, "");
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(cleanUsername)) {
+      return NextResponse.json(
+        {
+          message:
+            "Username must be 3-20 characters long and contain only letters, numbers, and underscores",
+        },
         { status: 400 }
       );
     }
@@ -33,8 +45,16 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingUsername = await User.findOne({ username: cleanUsername });
+    if (existingUsername) {
+      return NextResponse.json(
+        { message: "Username is already taken" },
+        { status: 400 }
+      );
+    }
+
+    const existingEmail = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existingEmail) {
       return NextResponse.json(
         { message: "Email already exists" },
         { status: 400 }
@@ -46,8 +66,11 @@ export async function POST(req: NextRequest) {
 
     const newUser = await User.create({
       fullName,
-      email,
+      username: cleanUsername,
+      email: email.toLowerCase().trim(),
       password: hashedPassword,
+      hasChosenUsername: true,
+      contacts: [],
     });
 
     const token = generateToken(newUser._id.toString());
@@ -55,8 +78,10 @@ export async function POST(req: NextRequest) {
       {
         _id: newUser._id,
         fullName: newUser.fullName,
+        username: newUser.username,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        hasChosenUsername: true,
       },
       { status: 201 }
     );

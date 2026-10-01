@@ -1,0 +1,12 @@
+services:
+  chatify:
+    build: .
+    container_name: chatify-container
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - backend/.env
+    environment:
+      - NODE_ENV=production
+

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { getAppOrigin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,16 +36,11 @@ export async function POST(req: NextRequest) {
       user.resetPasswordExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour expiry
       await user.save();
 
-      const origin =
-        process.env.NEXT_PUBLIC_APP_URL ||
-        req.headers.get("origin") ||
-        req.nextUrl.origin ||
-        "http://localhost:3000";
-
+      const origin = getAppOrigin(req);
       const resetLink = `${origin}/reset-password?token=${rawToken}`;
 
       console.log("\n=======================================================");
-      console.log("🔑 PASSWORD RESET LINK GENERATED FOR:", user.email);
+      console.log("PASSWORD RESET LINK GENERATED FOR:", user.email);
       console.log(resetLink);
       console.log("=======================================================\n");
 

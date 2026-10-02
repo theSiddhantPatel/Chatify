@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
-import { generateToken, setAuthCookie } from "@/lib/auth";
+import { generateToken, setAuthCookie, getAppOrigin } from "@/lib/auth";
 import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
@@ -89,8 +89,7 @@ export async function POST(req: NextRequest) {
     setAuthCookie(response, token);
 
     // Send welcome email in background
-    const clientUrl =
-      process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin || "http://localhost:3000";
+    const clientUrl = getAppOrigin(req);
     sendWelcomeEmail(newUser.email, newUser.fullName, clientUrl).catch((err) =>
       console.error("Welcome email failed:", err)
     );

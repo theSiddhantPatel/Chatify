@@ -51,3 +51,41 @@ export async function getAuthenticatedUser(req: NextRequest): Promise<IUserDocum
     return null;
   }
 }
+
+export function getAppOrigin(req: NextRequest): string {
+  if (process.env.APP_URL) {
+    return process.env.APP_URL.replace(/\/$/, "");
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
+  }
+
+  try {
+    const forwardedHost = req.headers.get("x-forwarded-host");
+    const forwardedProto = req.headers.get("x-forwarded-proto");
+
+    if (forwardedHost) {
+      const host = forwardedHost.split(",")[0].trim();
+      const proto = forwardedProto
+        ? forwardedProto.split(",")[0].trim()
+        : host.startsWith("localhost")
+        ? "http"
+        : "https";
+      return `${proto}://${host}`;
+    }
+
+    if (req.nextUrl && req.nextUrl.origin && !req.nextUrl.origin.includes("undefined")) {
+      return req.nextUrl.origin;
+    }
+  } catch (err) {
+    console.error("Error resolving app origin:", err);
+  }
+
+  return "http://localhost:3000";
+}

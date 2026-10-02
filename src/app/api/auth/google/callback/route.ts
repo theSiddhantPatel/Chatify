@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
-import { generateToken, setAuthCookie } from "@/lib/auth";
+import { generateToken, setAuthCookie, getAppOrigin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const host =
-    req.headers.get("x-forwarded-host") ||
-    req.headers.get("host") ||
-    "localhost:3000";
-  const proto =
-    req.headers.get("x-forwarded-proto") ||
-    (host.startsWith("localhost") ? "http" : "https");
-  const origin = process.env.APP_URL || `${proto}://${host}`;
+  const origin = getAppOrigin(req);
   const redirectUri = `${origin}/api/auth/google/callback`;
 
   const searchParams = req.nextUrl.searchParams;
@@ -19,7 +12,7 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
 
   if (error || !code) {
-    console.error("Google OAuth error or cancelled by user:", error);
+    console.error("Google OAuth callback error or user cancelled:", error);
     return NextResponse.redirect(new URL("/login?error=GoogleAuthCancelled", origin));
   }
 
@@ -27,7 +20,9 @@ export async function GET(req: NextRequest) {
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    console.error("Google OAuth credentials missing in environment");
+    console.error(
+      "Google OAuth callback error: Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in environment variables."
+    );
     return NextResponse.redirect(new URL("/login?error=GoogleNotConfigured", origin));
   }
 
@@ -83,22 +78,6 @@ export async function GET(req: NextRequest) {
       }
       if (!user.profilePic && profile.picture) {
         user.profilePic = profile.picture;
-        modified = true;
-      }
-      if (!user.username) {
-        const baseUsername =
-          (user.fullName || profile.name || "user")
-            .toLowerCase()
-            .replace(/[^a-z0-9_]/g, "")
-            .slice(0, 15) || "user";
-
-        let candidate = baseUsername;
-        let suffix = 1;
-        while (await User.exists({ username: candidate })) {
-          candidate = `${baseUsername}${suffix}`;
-          suffix++;
-        }
-        user.username = candidate;
         modified = true;
       }
       if (modified) {
